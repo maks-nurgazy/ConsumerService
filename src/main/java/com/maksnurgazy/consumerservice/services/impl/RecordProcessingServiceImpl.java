@@ -28,6 +28,8 @@ public class RecordProcessingServiceImpl implements RecordProcessingService {
 
     @PreDestroy
     public void onShutdown() {
+        System.out.println("On shutdown ");
+        System.out.println(fileInfo);
         if (fileInfo.getStatus() != ProcessStatus.PROCESSED) {
             fileInfo.setStatus(ProcessStatus.STOPPED);
         }
@@ -42,12 +44,12 @@ public class RecordProcessingServiceImpl implements RecordProcessingService {
 
     @Override
     public void processRecords() {
-        if (Objects.nonNull(fileInfo)) {
+        if (Objects.nonNull(fileInfo) && fileInfo.getStatus() == ProcessStatus.STOPPED) {
             processFile(fileInfo);
         }
 
         List<FileInfo> files = processedFileInfoRepository.findAllByStatusNot(ProcessStatus.PROCESSED);
-        System.out.println("not process size: "+files.size());
+        System.out.println("not process size: " + files.size());
         files.forEach(this::processFile);
     }
 
